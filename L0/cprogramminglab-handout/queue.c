@@ -37,16 +37,16 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
-    /* How about freeing the list elements? */
-    list_ele_t *tmp;
+    list_ele_t *tmp = NULL;
     while (NULL != q->head)
     {
-       tmp = q->head;
-       q->head = q->head->next;
-       /* Free queue structure */
-       free(tmp);
+        tmp = q->head;
+        q->head = q->head->next;
+        /* Free queue structure */
+        free(tmp);
+        tmp = NULL;
     }
-    free(q->tail);
+    q->tail = NULL;
 }
 
 /*
@@ -150,7 +150,7 @@ int q_size(queue_t *q)
  */
 void q_reverse(queue_t *q) {
     /* no need to reverse queue less than 2 nodes */
-    if (NULL == q || NULL == q->head || NULL == q->head->next)
+    if (NULL == q->head || NULL == q->head->next)
     {
         return;
     }
