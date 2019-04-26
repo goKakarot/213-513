@@ -22,14 +22,14 @@
 */
 queue_t *q_new()
 {
-    queue_t *q =  malloc(sizeof(queue_t));
+    queue_t *q = malloc(sizeof(queue_t));
     /* What if malloc returned NULL? */
     if (NULL == q)
     {
         return NULL;
     }
     q->head = NULL;
-    q->tail = q->head;
+    q->tail = NULL;
     q->size = 0;
     return q;
 }
@@ -42,11 +42,17 @@ void q_free(queue_t *q)
     {
         tmp = q->head;
         q->head = q->head->next;
-        /* Free queue structure */
+        /* Free queue's element */
         free(tmp);
         tmp = NULL;
     }
+    /* free queue structure */
+    free(q);
+    /* q->head point to a NULL, no need to handle?
+     * what is the end of a linked list exactly?
+     */
     q->tail = NULL;
+    q = NULL;
 }
 
 /*
