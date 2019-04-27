@@ -37,22 +37,20 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
-    list_ele_t *tmp = NULL;
-    while (NULL != q->head)
+    if (NULL != q)
     {
-        tmp = q->head;
-        q->head = q->head->next;
-        /* Free queue's element */
-        free(tmp);
-        tmp = NULL;
+        list_ele_t *tmp = NULL;
+        while (NULL != q->head) {
+            tmp = q->head;
+            q->head = q->head->next;
+            /* Free queue's element */
+            free(tmp);
+            tmp = NULL;
+        }
+        /* free queue structure */
+        free(q);
+        q = NULL;
     }
-    /* free queue structure */
-    free(q);
-    /* q->head point to a NULL, no need to handle?
-     * what is the end of a linked list exactly?
-     */
-    q->tail = NULL;
-    q = NULL;
 }
 
 /*
@@ -62,24 +60,28 @@ void q_free(queue_t *q)
  */
 bool q_insert_head(queue_t *q, int v)
 {
+    if (NULL == q)
+    {
+        return false;
+    }
     list_ele_t *newh;
     /* What should you do if the q is NULL? */
     /* What if malloc returned NULL? */
     newh = malloc(sizeof(list_ele_t));
-    if (NULL == newh || NULL == q)
+    if (NULL == newh)
     {
         return false;
     }
     newh->value = v;
     newh->next = q->head;
     q->head = newh;
-    /* set the queue tail position */
+    /* set tail */
     if (q->size ==  0)
     {
         q->tail = newh;
     }
-    /* insert new node increases the queue size */
-    q->size += 1;
+    /* new node increases queue size */
+    q->size++;
     return true;
 }
 
@@ -92,9 +94,13 @@ bool q_insert_tail(queue_t *q, int v)
 {
     /* You need to write the complete code for this function */
     /* Remember: It should operate in O(1) time */
+    if (NULL == q)
+    {
+        return false;
+    }
     list_ele_t *newh;
     newh = malloc(sizeof(list_ele_t));
-    if (NULL == newh || NULL == q)
+    if (NULL == newh)
     {
         return false;
     }
@@ -102,8 +108,8 @@ bool q_insert_tail(queue_t *q, int v)
     newh->next = NULL;
     q->tail->next = newh;
     q->tail = newh;
-    /* insert new node increases the queue size */
-    q->size += 1;
+    /* new node increases queue size */
+    q->size++;
     return true;
 }
 
@@ -123,12 +129,17 @@ bool q_remove_head(queue_t *q, int *vp)
     /* tmp to store removed head */
     list_ele_t *tmp;
     tmp = q->head;
-    /* free removed head storage */
-    free(tmp);
+    /* store removed element value to *vo */
+    if (NULL != vp)
+    {
+        *vp = tmp->value;
+    }
     /* head to next node */
     q->head = q->head->next;
+    /* free removed head storage */
+    free(tmp);
     /* decrease the queue size */
-    q->size -= 1;
+    q->size--;
     return true;
 }
 
@@ -155,19 +166,25 @@ int q_size(queue_t *q)
   the pointers in the existing data structure.
  */
 void q_reverse(queue_t *q) {
-    /* no need to reverse queue less than 2 nodes */
+    /* no need to reverse if queue less than 2 nodes
     if (NULL == q->head || NULL == q->head->next)
     {
         return;
     }
-    list_ele_t *prev = NULL;
-    list_ele_t *next = NULL;
-    while (NULL != q->head)
+     */
+    if (NULL != q)
     {
-        next = q->head->next;
-        q->head->next = prev;
-        prev = q->head;
-        q->head = next;
+        list_ele_t *prev = NULL;
+        list_ele_t *next = NULL;
+        q->tail = q->head;
+        while (NULL != q->head) {
+            next = q->head->next;
+            q->head->next = prev;
+            prev = q->head;
+            q->head = next;
+        }
+        /* q->head is NULL, re-point to prev */
+        q->head = prev;
     }
 }
 
